@@ -69,7 +69,7 @@ module dut (
 
     
     blk_mem_gen #(
-        .G_MEMWIDTH  (32),
+        .G_DATAWIDTH  (32),
         .G_MEMDEPTH  (1024),
         .G_INIT_FILE (G_INIT_FILE)
     )

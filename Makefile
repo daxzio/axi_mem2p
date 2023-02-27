@@ -1,9 +1,10 @@
 SIM ?= icarus
 TOPLEVEL_LANG = verilog
 VERILOG_SOURCES = \
-    $(shell pwd)/blockmem_2p.sv \
-    $(shell pwd)/blk_mem_gen.sv \
-    $(shell pwd)/dut.sv 
+    ./blockmem_2p.sv \
+    ./blockmem_2p_wrapper.sv \
+    ./blk_mem_gen.sv \
+    ./dut.sv 
     
 TOPLEVEL = dut
 MODULE = test_2p

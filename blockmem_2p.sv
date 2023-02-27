@@ -9,25 +9,25 @@ module blockmem_2p (
     ,addrb
     ,doutb
     );
-    parameter  integer G_MEMWIDTH  = 32;
+    parameter  integer G_DATAWIDTH = 32;
     parameter  integer G_MEMDEPTH  = 1024;
     parameter          G_INIT_FILE = "" ;
     localparam integer G_ADDRWIDTH = $clog2(G_MEMDEPTH);
-    localparam integer G_WEWIDTH   = ((G_MEMWIDTH-1)/8)+1;
+    localparam integer G_WEWIDTH   = ((G_DATAWIDTH-1)/8)+1;
 
     input                    clka;
     input                    ena;
     input  [G_WEWIDTH-1:0]   wea;
     input  [G_ADDRWIDTH-1:0] addra;
-    input  [G_MEMWIDTH-1:0]  dina;
+    input  [G_DATAWIDTH-1:0] dina;
     input                    clkb;
     input                    enb;
     input  [G_ADDRWIDTH-1:0] addrb;
-    output [G_MEMWIDTH-1:0]  doutb;
+    output [G_DATAWIDTH-1:0] doutb;
 
-    (* ram_style = "block" *) reg [G_MEMWIDTH-1:0] f_ram [G_MEMDEPTH-1:0];
-    //(* ram_style = "block" *) reg [G_MEMWIDTH-1:0] f_ram [G_MEMDEPTH];
-    reg [G_MEMWIDTH-1:0] f_doutb;
+    logic [G_DATAWIDTH-1:0] f_ram [G_MEMDEPTH-1:0];
+    //logic [G_DATAWIDTH-1:0] f_ram [G_MEMDEPTH];
+    logic [G_DATAWIDTH-1:0] f_doutb;
 
     initial begin
         // synthesis translate_off
@@ -40,17 +40,13 @@ module blockmem_2p (
         end
     end
 
-    generate
-    genvar i;
-        for (i = 0 ; i < G_MEMWIDTH/8 ; i=i+1)
-        begin : g_write_mem
-            always @(posedge clka)
-            begin
-                if (ena & wea[i])
-                    f_ram[addra][(8*i)+7:8*i] <= dina[(8*i)+7:8*i];
-            end
+    always @(posedge clka)
+    begin
+        for (integer i = 0 ; i < G_WEWIDTH ; i=i+1) begin
+            if (ena & wea[i])
+                f_ram[addra][(8*i)+:8] <= dina[(8*i)+:8];
         end
-    endgenerate
+    end
 
     always @(posedge clkb) begin
         // synthesis translate_off
