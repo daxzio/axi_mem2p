@@ -1,10 +1,10 @@
 module blk_mem_gen #(
-    G_DATAWIDTH = 32
-    ,G_MEMDEPTH = 1024
-    ,G_INIT_FILE = "" 
-    ,G_ID_WIDTH = 1 
-    ,G_ADDRWIDTH = $clog2(G_MEMDEPTH)
-    ,G_WEWIDTH = ((G_DATAWIDTH-1)/8)+1
+    integer G_DATAWIDTH = 32
+    ,integer G_MEMDEPTH = 1024
+    ,integer G_INIT_FILE = "" 
+    ,integer G_ID_WIDTH = 1 
+    ,integer G_ADDRWIDTH = $clog2(G_MEMDEPTH)
+    ,integer G_WEWIDTH = ((G_DATAWIDTH-1)/8)+1
 )
 (
      input s_aclk
@@ -228,7 +228,6 @@ module blk_mem_gen #(
     assign s_axi_rvalid = f_axi_rvalid;
 
 
-    assign s_axi_rdata = w_doutb;
 
     // This sections deals with the data that in non used on the AXI side of the interface
     wire                   w_ena   ;
@@ -239,6 +238,7 @@ module blk_mem_gen #(
     wire                   w_enb   ;
     wire [G_ADDRWIDTH-1:0] w_raddr ;
     
+    assign s_axi_rdata = w_doutb;
     
     //assign  w_ena   = f_axi_wready & s_axi_wvalid;
     assign  w_ena   = f_ena;
