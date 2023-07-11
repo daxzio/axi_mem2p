@@ -107,7 +107,7 @@ module blk_mem_gen #(
                     d_waddr <= f_waddr + 4;
                     if (s_axi_wlast) begin
                         d_axi_write_state <= WRITE1;
-                        d_ena             <= 0;
+                        d_ena             <= ~f_ena;
                     end
                 end
             end
