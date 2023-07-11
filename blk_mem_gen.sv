@@ -101,12 +101,11 @@ module blk_mem_gen #(
             end
             WRITE0: begin
                 d_axi_wready <= 1;
-                if (s_axi_wvalid) begin
-                    d_ena   <= 1;
+                if (s_axi_wvalid && f_axi_wready) begin
                     d_waddr <= f_waddr + 4;
+                    d_ena             <= 1;
                     if (s_axi_wlast) begin
                         d_axi_write_state <= WRITE1;
-                        d_ena             <= ~f_ena;
                     end
                 end
             end
@@ -240,7 +239,7 @@ module blk_mem_gen #(
     assign s_axi_rdata = w_doutb;
 
     //assign  w_ena   = f_axi_wready & s_axi_wvalid;
-    assign w_ena = f_ena;
+    assign w_ena = d_ena;
     assign w_wea = {G_WEWIDTH{1'b1}};
     assign w_dina = s_axi_wdata[G_DATAWIDTH-1:0];
     assign w_enb = d_axi_rvalid;
@@ -256,7 +255,7 @@ module blk_mem_gen #(
         .clka (s_aclk),
         .ena  (w_ena),
         .wea  (w_wea),
-        .addra(f_waddr_dly),
+        .addra(f_waddr),
         .dina (w_dina),
         .clkb (s_aclk),
         .enb  (w_enb),

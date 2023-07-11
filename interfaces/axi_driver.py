@@ -82,13 +82,19 @@ class AxiDriver:
         if not returned_val == data and not None == data:
             raise Exception(f"Expected 0x{data:08x} doesn't match returned 0x{returned_val:08x}")
 
-    async def write(self, addr, data, length=None):
+    async def write(self, addr, data=None, length=None):
         if length is None:
-            if 0 == data:
+            if 0 == data or None == data:
                 length = 4
             else:
                 length = math.ceil(math.log2(data)/32)*4
+        
+        if data is None:
+            data = 0
+            for i in range(int(length/4)-1):
+                data = (data << 32) + randint(0,0xffffffff)
         self.log.debug(f"Write 0x{addr:08x}: 0x{data:08x}")
+        self.tx_data = data
         bytesdata = tobytes(data, length)
         await self.axi_master.write(addr, bytesdata)
 
@@ -114,19 +120,22 @@ class AxiStreamDriver:
         self.log.setLevel(logging.WARNING)
 
     def enable_backpressure(self):
-        base_seed = randint(0,0xffffff)
+        #base_seed = randint(0,0xffffff)
+        base_seed = 7
         self.axis_source.set_pause_generator(cycle_pause(base_seed))
 
     def disable_backpressure(self):
         #self.axis_source.clear_pause_generator()
         self.axis_source.set_pause_generator(itertools.cycle([0,]))
     
-    async def write(self, data, length=None):
+    async def write(self, data=None, length=None):
         if length is None:
-            if 0 == data:
+            if 0 == data or None == data:
                 length = 4
             else:
                 length = math.ceil(math.log2(data)/32)*4
+        if data is None:
+            data = randint(0,0xffffff)
         self.log.debug(f"Write 0x{data:08x}")
         bytesdata = tobytes(data, length)
         await self.axis_source.write(bytesdata)

@@ -54,3 +54,32 @@ async def test_dut_simple(dut):
     await tb.cr.wait_clkn(200)
           
     await tb.cr.end_test()
+
+@test()
+async def test_dut_delay(dut):
+    
+    tb = testbench(dut, reset_sense=0)
+    tb.axi.enable_backpressure()
+ 
+
+    await tb.cr.start_test()
+    
+    await tb.cr.wait_clkn(200)
+    
+    await tb.axi.write(0x00000000, 0x0000000800000007000000060000000500000004000000030000000200000001)
+    await tb.axi.read(0x00000000, 0x0000000800000007000000060000000500000004000000030000000200000001)
+    
+#     await tb.axi.write(0x00000000, 0x66666666)
+#     await tb.axi.read(0x00000000, 0x5555555566666666)
+    await tb.axi.write(0x00000000, length=256)
+    await tb.axi.read(0x00000000, tb.axi.tx_data)
+
+    await tb.axi.write(0x00000000, length=256)
+    await tb.axi.read(0x00000000, tb.axi.tx_data)
+
+    await tb.axi.write(0x00000000, length=256)
+    await tb.axi.read(0x00000000, tb.axi.tx_data)
+
+    await tb.cr.wait_clkn(200)
+          
+    await tb.cr.end_test()
