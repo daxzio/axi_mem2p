@@ -103,7 +103,7 @@ module blk_mem_gen #(
                 d_axi_wready <= 1;
                 if (s_axi_wvalid && f_axi_wready) begin
                     d_waddr <= f_waddr + 4;
-                    d_ena             <= 1;
+                    d_ena   <= 1;
                     if (s_axi_wlast) begin
                         d_axi_write_state <= WRITE1;
                     end
@@ -228,13 +228,13 @@ module blk_mem_gen #(
 
 
     // This sections deals with the data that in non used on the AXI side of the interface
-    wire                   w_ena;
-    wire [  G_WEWIDTH-1:0] w_wea;
-    wire [  G_WEWIDTH-1:0] w_web;
-    wire [G_DATAWIDTH-1:0] w_doutb;
-    wire [G_DATAWIDTH-1:0] w_dina;
-    wire                   w_enb;
-    wire [G_ADDRWIDTH-1:0] w_raddr;
+    logic                   w_ena;
+    logic [  G_WEWIDTH-1:0] w_wea;
+    logic [  G_WEWIDTH-1:0] w_web;
+    logic [G_DATAWIDTH-1:0] w_doutb;
+    logic [G_DATAWIDTH-1:0] w_dina;
+    logic                   w_enb;
+    logic [G_ADDRWIDTH-1:0] w_raddr;
 
     assign s_axi_rdata = w_doutb;
 
@@ -247,20 +247,20 @@ module blk_mem_gen #(
     assign w_raddr = d_raddr;
 
     blockmem_2p_wrapper #(
-        .G_DATAWIDTH(G_DATAWIDTH),
-        .G_MEMDEPTH (G_MEMDEPTH),
-        .G_BWENABLE (1),
-        .G_INIT_FILE(G_INIT_FILE)
+          .G_DATAWIDTH(G_DATAWIDTH)
+        , .G_MEMDEPTH (G_MEMDEPTH)
+        , .G_BWENABLE (1)
+        , .G_INIT_FILE(G_INIT_FILE)
     ) i_blockmem_2p (
-        .clka (s_aclk),
-        .ena  (w_ena),
-        .wea  (w_wea),
-        .addra(f_waddr),
-        .dina (w_dina),
-        .clkb (s_aclk),
-        .enb  (w_enb),
-        .addrb(w_raddr),
-        .doutb(w_doutb)
+          .clka (s_aclk)
+        , .ena  (w_ena)
+        , .wea  (w_wea)
+        , .addra(f_waddr)
+        , .dina (w_dina)
+        , .clkb (s_aclk)
+        , .enb  (w_enb)
+        , .addrb(w_raddr)
+        , .doutb(w_doutb)
     );
 endmodule
 
