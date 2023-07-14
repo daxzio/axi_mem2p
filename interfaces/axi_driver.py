@@ -47,8 +47,11 @@ class AxiDriver:
     def disable_logging(self):
         self.log.setLevel(logging.WARNING)
 
-    def enable_backpressure(self):
-        base_seed = randint(0,0xffffff)
+    def enable_backpressure(self, seed=None):
+        if seed is None:
+            base_seed = randint(0,0xffffff)
+        else:
+            base_seed = seed
         self.axi_master.write_if.aw_channel.set_pause_generator(cycle_pause(base_seed+1))
         self.axi_master.write_if.w_channel.set_pause_generator(cycle_pause(base_seed+2))
         self.axi_master.write_if.b_channel.set_pause_generator(cycle_pause(base_seed+3))
@@ -90,7 +93,7 @@ class AxiDriver:
                 length = math.ceil(math.log2(data)/32)*4
         
         if data is None:
-            data = 0
+            data = randint(0,0xffffffff)
             for i in range(int(length/4)-1):
                 data = (data << 32) + randint(0,0xffffffff)
         self.log.debug(f"Write 0x{addr:08x}: 0x{data:08x}")
@@ -119,9 +122,11 @@ class AxiStreamDriver:
     def disable_logging(self):
         self.log.setLevel(logging.WARNING)
 
-    def enable_backpressure(self):
-        #base_seed = randint(0,0xffffff)
-        base_seed = 7
+    def enable_backpressure(self, seed=None):
+        if seed is None:
+            base_seed = randint(0,0xffffff)
+        else:
+            base_seed = seed
         self.axis_source.set_pause_generator(cycle_pause(base_seed))
 
     def disable_backpressure(self):
