@@ -217,7 +217,6 @@ module blk_mem_gen #(
             end
             default: d_axi_read_state <= RIDLE;
         endcase
-        ;
     end
     assign s_axi_arready = f_axi_arready;
     assign s_axi_rid = f_axi_rid;
