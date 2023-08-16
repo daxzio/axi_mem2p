@@ -2,7 +2,7 @@ module blk_mem_gen #(
       integer G_DATAWIDTH = 32
     , integer G_MEMDEPTH  = 1024
     , integer G_INIT_FILE = ""
-    , integer G_ID_WIDTH  = 1
+    , integer G_ID_WIDTH  = 4
     , integer G_ADDRWIDTH = $clog2(G_MEMDEPTH)
     , integer G_WEWIDTH   = ((G_DATAWIDTH - 1) / 8) + 1
 ) (

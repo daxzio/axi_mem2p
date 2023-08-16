@@ -29,7 +29,10 @@ class clkreset:
 class testbench:
     def __init__(self, dut, reset_sense=1):
         self.cr = clkreset(dut, reset_sense=reset_sense)
-        self.axi = AxiDriver(dut, reset_name="s_aresetn")
+        #self.axi = AxiDriver(dut, reset_name="s_aresetn")
+        self.axi = AxiDriver(dut)
+        self.axi.awid = 0
+        self.axi.arid = 0
 
 
 @test()
@@ -71,35 +74,35 @@ async def test_dut_delay(dut):
     await tb.axi.read(0x00000000, 0x0000000800000007000000060000000500000004000000030000000200000001)
     
     await tb.axi.write(0x00000000, length=256)
-    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
 
     await tb.axi.write(0x00000000, length=256)
-    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
 
     await tb.axi.write(0x00000000, length=256)
-    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
 
     await tb.axi.write(0x00000000, length=4)
-    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
     await tb.axi.write(0x00000000, length=4)
-    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
     await tb.axi.write(0x00000000, length=4)
-    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
     await tb.axi.write(0x00000000, length=4)
-    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
     await tb.axi.write(0x00000000, length=4)
-    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
     await tb.axi.write(0x00000000, length=4)
-    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
     await tb.axi.write(0x00000000, length=4)
-    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
     await tb.axi.write(0x00000000, length=4)
-    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
     await tb.axi.write(0x00000000, length=4)
-    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
 
     await tb.axi.write(0x00000000, length=8)
-    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
     
     await tb.cr.wait_clkn(200)
           
