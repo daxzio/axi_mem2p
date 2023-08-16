@@ -1,83 +1,106 @@
-import cocotb
+from cocotb import start_soon
+from cocotb import test
 from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge
-from cocotbext.axi import AxiBus, AxiMaster
+from interfaces.axi_driver import AxiDriver
+from random import randint
 
-def tobytes(val, length=4):
-    array = []
-    for i in range(length):
-        array.append((val>>(8*i))&0xff)
-    return bytearray(array)
-    
-async def axi_read_verify(axi_master, addr, length, val):
-    data = await axi_master.read(addr, length)
-    
-    assert data.data == val
-    return
+class clkreset:
+    def __init__(self, dut, reset_sense=1):
+        self.clk = dut.s_aclk
+        self.reset = dut.s_aresetn
+        self.reset_sense = reset_sense
 
-async def start_test(dut, period=10, units="ns"):
-    cocotb.start_soon(Clock(dut.clk, period, units=units).start())
- 
-    dut.resetn.setimmediatevalue(0)
-    await RisingEdge(dut.clk)
-    await RisingEdge(dut.clk)
-    await RisingEdge(dut.clk)
-    await RisingEdge(dut.clk)
-    dut.resetn.value = 1    
-    await RisingEdge(dut.clk)
-    await RisingEdge(dut.clk)
-     
+    async def wait_clkn(self, length=1):
+        for i in range(int(length)):
+            await RisingEdge(self.clk)
 
-async def end_test(dut):
-    await RisingEdge(dut.clk)
-    await RisingEdge(dut.clk)
-    await RisingEdge(dut.clk)
-    await RisingEdge(dut.clk)
-
-@cocotb.test()
-async def test_dp_simple(dut):
-    await start_test(dut)
-
-    axi_master = AxiMaster(AxiBus.from_prefix(dut, "s_axi"), dut.clk, dut.resetn)
-    
-    #await axi_read_verify(axi_master, 0x0000, 4, b'test')
-    
-    data = await axi_master.read(0x0000, 4)
-    
-    assert data.data == b'\x00\x00\x00\x00'
-
-
-    await axi_master.write(0x0000, b'test')
-    data = await axi_master.read(0x0000, 4)
-    
-    assert data.data == b'test'
-
+    async def start_test(self, period=17, units="ns"):
+        start_soon(Clock(self.clk, period, units=units).start())        
         
-    await axi_master.write(0x0010, b'1234test')
-    data = await axi_master.read(0x0010, 8)
-    
-    assert data.data == b'1234test'
-    
-    await axi_master.write(0x0020, b'xyfe')
-    data = await axi_master.read(0x0020, 4)
-    
-    assert data.data == b'xyfe'
-    
-    #await axi_master.write(0x0010, 0x12345678)
-    
-    await end_test(dut)
-    
-@cocotb.test()
-async def test_dp_init(dut):
-    
-    await start_test(dut)
+        self.reset.setimmediatevalue(self.reset_sense)
+        await self.wait_clkn(100)
+        self.reset.value = (~self.reset_sense)  & 0x1
+        await self.wait_clkn(100)
 
-    axi_master = AxiMaster(AxiBus.from_prefix(dut, "s_axi"), dut.clk, dut.resetn)
+    async def end_test(self, length=10):
+        await self.wait_clkn(length)
 
-    data = await axi_master.read(0x0000, 4)
+class testbench:
+    def __init__(self, dut, reset_sense=1):
+        self.cr = clkreset(dut, reset_sense=reset_sense)
+        self.axi = AxiDriver(dut, reset_name="s_aresetn")
+
+
+@test()
+async def test_dut_simple(dut):
     
-    assert data.data == b'test'
-    assert data.data == b'\x74\x65\x73\x74'
-    assert data.data == tobytes(0x74736574)
+    tb = testbench(dut, reset_sense=0)
+    tb.axi.disable_backpressure()
+ 
+
+    await tb.cr.start_test()
     
-    await end_test(dut)    
+    await tb.cr.wait_clkn(200)
+    
+    await tb.axi.write(0x00000000, 0x2222222211111111)
+    await tb.axi.read(0x00000000, 0x2222222211111111)
+    
+    await tb.axi.write(0x00000000, 0x33333333)
+    await tb.axi.read(0x00000000, 0x2222222233333333)
+#     await tb.axi.write(0x00000000, 0x4444444433333333)
+#     await tb.axi.read(0x00000000, 0x4444444433333333)
+
+
+    await tb.cr.wait_clkn(200)
+          
+    await tb.cr.end_test()
+
+@test()
+async def test_dut_delay(dut):
+    
+    tb = testbench(dut, reset_sense=0)
+    tb.axi.enable_backpressure(7)
+ 
+
+    await tb.cr.start_test()
+    
+    await tb.cr.wait_clkn(200)
+    
+    await tb.axi.write(0x00000000, 0x0000000800000007000000060000000500000004000000030000000200000001)
+    await tb.axi.read(0x00000000, 0x0000000800000007000000060000000500000004000000030000000200000001)
+    
+    await tb.axi.write(0x00000000, length=256)
+    await tb.axi.read(0x00000000, tb.axi.tx_data)
+
+    await tb.axi.write(0x00000000, length=256)
+    await tb.axi.read(0x00000000, tb.axi.tx_data)
+
+    await tb.axi.write(0x00000000, length=256)
+    await tb.axi.read(0x00000000, tb.axi.tx_data)
+
+    await tb.axi.write(0x00000000, length=4)
+    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.write(0x00000000, length=4)
+    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.write(0x00000000, length=4)
+    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.write(0x00000000, length=4)
+    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.write(0x00000000, length=4)
+    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.write(0x00000000, length=4)
+    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.write(0x00000000, length=4)
+    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.write(0x00000000, length=4)
+    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    await tb.axi.write(0x00000000, length=4)
+    await tb.axi.read(0x00000000, tb.axi.tx_data)
+
+    await tb.axi.write(0x00000000, length=8)
+    await tb.axi.read(0x00000000, tb.axi.tx_data)
+    
+    await tb.cr.wait_clkn(200)
+          
+    await tb.cr.end_test()
