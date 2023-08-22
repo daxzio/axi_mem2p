@@ -44,7 +44,7 @@ module axi_1p #(
     logic [G_ADDRWIDTH-1:0] w_waddr;
     logic [G_DATAWIDTH-1:0] w_rdata;
     logic [G_DATAWIDTH-1:0] w_wdata;
-    logic [G_WEWIDTH-1:0]   w_wstrb;
+    logic [  G_WEWIDTH-1:0] w_wstrb;
     logic                   w_rd;
     logic                   w_wr;
     logic [  G_WEWIDTH-1:0] w_wea;
@@ -68,14 +68,14 @@ module axi_1p #(
         , .s_axi_awregion(4'd0)
         , .s_axi_awuser  (1'd0)
         , .s_axi_wuser   (1'd0)
-        , .s_axi_buser   ( )
+        , .s_axi_buser   ()
         , .s_axi_arlock  (1'd0)
         , .s_axi_arcache (4'd0)
         , .s_axi_arprot  (3'd0)
         , .s_axi_arqos   (4'd0)
         , .s_axi_arregion(4'd0)
         , .s_axi_aruser  (1'd0)
-        , .s_axi_ruser   ( )
+        , .s_axi_ruser   ()
         , .rd            (w_rd)
         , .raddr         (w_raddr)
         , .rdata         (w_rdata)
@@ -88,7 +88,7 @@ module axi_1p #(
 
 
     assign w_wea = w_wstrb;
-    
+
     always @(posedge s_aclk) begin
         f_rvalid <= w_rd;
     end

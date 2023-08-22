@@ -47,9 +47,9 @@ module axi_2p #(
     logic [  G_WEWIDTH-1:0] w_wstrb;
     logic                   w_rd;
     logic                   w_wr;
-    logic [G_WEWIDTH-1:0] w_wea;
-    logic [G_WEWIDTH-1:0] w_web;
-    logic                 f_rvalid;
+    logic [  G_WEWIDTH-1:0] w_wea;
+    logic [  G_WEWIDTH-1:0] w_web;
+    logic                   f_rvalid;
 
     axi_config #(
         .ADDR_WIDTH(G_ADDRWIDTH)

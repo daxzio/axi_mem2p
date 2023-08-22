@@ -50,20 +50,20 @@ module axi_axis #(
 );
 
 
-    logic [     G_ADDRWIDTH-1:0] w_axi_raddr;
-    logic [     G_ADDRWIDTH-1:0] f_axi_raddr;
-    logic [     G_ADDRWIDTH-1:0] w_axi_waddr;
-    logic [     G_ADDRWIDTH-1:0] w_waddr;
-    logic [ G_AXI_DATAWIDTH-1:0] w_axi_rdata;
-    logic [G_AXIS_DATAWIDTH-1:0] w_rdata;
+    logic [                 G_ADDRWIDTH-1:0] w_axi_raddr;
+    logic [                 G_ADDRWIDTH-1:0] f_axi_raddr;
+    logic [                 G_ADDRWIDTH-1:0] w_axi_waddr;
+    logic [                 G_ADDRWIDTH-1:0] w_waddr;
+    logic [             G_AXI_DATAWIDTH-1:0] w_axi_rdata;
+    logic [            G_AXIS_DATAWIDTH-1:0] w_rdata;
     logic [(G_AXI_DATAWIDTH*G_AXI_PACK)-1:0] w_rdata_expand;
-    logic [ G_AXI_DATAWIDTH-1:0] w_axi_wdata;
-    logic [ (G_AXI_DATAWIDTH*G_AXI_PACK)-1:0] w_wdata;
-    logic [         G_WSTRB-1:0] w_wstrb;
-    logic                        w_axi_rd;
-    logic                        w_wr;
-    logic [  (G_AXI_PACK*4)-1:0] w_wea;
-    logic                        f_rvalid;
+    logic [             G_AXI_DATAWIDTH-1:0] w_axi_wdata;
+    logic [(G_AXI_DATAWIDTH*G_AXI_PACK)-1:0] w_wdata;
+    logic [                     G_WSTRB-1:0] w_wstrb;
+    logic                                    w_axi_rd;
+    logic                                    w_wr;
+    logic [              (G_AXI_PACK*4)-1:0] w_wea;
+    logic                                    f_rvalid;
 
     localparam logic [1:0] STATE_IDLE = 2'd0, STATE_RDY = 2'd1, STATE_LAST = 2'd2, STATE_DATA_READ = 2'd3;
 
@@ -86,8 +86,8 @@ module axi_axis #(
     logic [     G_ADDRWIDTH-1:0] w_raddr;
     logic                        w_rd;
 
-    logic [7:0]                  f_axi_frame_length = 32;
-//     logic                        f_axi_enable = 1;
+    logic [                 7:0] f_axi_frame_length = 32;
+    //     logic                        f_axi_enable = 1;
 
     axi_config #(
         .ADDR_WIDTH(G_ADDRWIDTH)
@@ -191,7 +191,7 @@ module axi_axis #(
                     d_axis_tvalid = 0;
                     d_axis_tlast  = 0;
                     d_axis_state  = STATE_IDLE;
-                    d_axis_raddr = f_axis_raddr + 1;
+                    d_axis_raddr  = f_axis_raddr + 1;
                     //d_axis_raddr  = 0;
                 end
             end
@@ -206,7 +206,7 @@ module axi_axis #(
     assign w_raddr = w_axi_rd ? w_axi_raddr[(G_AXI_PACK+1)+:$bits(w_axi_raddr)-G_AXI_PACK-1] : f_axis_raddr;
     assign w_rd = w_axi_rd | d_axis_rd;
     //assign w_axi_rdata = ~f_axi_raddr[G_AXI_PACK] ? w_rdata_expand[0+:32] : w_rdata_expand[32+:32];
-    
+
     generate
         if (G_AXI_PACK <= 1) begin
             assign w_axi_rdata = w_rdata_expand[0+:G_AXI_DATAWIDTH];
