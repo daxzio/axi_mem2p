@@ -1,8 +1,11 @@
-module dut (
+module dut #(
+    integer G_AXI_DATAWIDTH = 32
+    , integer G_AXIS_DATAWIDTH = 48
+) (
     input s_aclk
    ,input s_aresetn
-   ,input [0:0]s_axi_awid
-   ,input [31:0]s_axi_awaddr
+   ,input [3:0]s_axi_awid
+   ,input [9:0]s_axi_awaddr
    ,input [7:0]s_axi_awlen
    ,input [2:0]s_axi_awsize
    ,input [1:0]s_axi_awburst
@@ -13,23 +16,29 @@ module dut (
    ,input s_axi_wlast
    ,input s_axi_wvalid
    ,output s_axi_wready
-   ,output [0:0]s_axi_bid
+   ,output [3:0]s_axi_bid
    ,output [1:0]s_axi_bresp
    ,output s_axi_bvalid
    ,input s_axi_bready
-   ,input [0:0]s_axi_arid
-   ,input [31:0]s_axi_araddr
+   ,input [3:0]s_axi_arid
+   ,input [9:0]s_axi_araddr
    ,input [7:0]s_axi_arlen
    ,input [2:0]s_axi_arsize
    ,input [1:0]s_axi_arburst
    ,input s_axi_arvalid
    ,output s_axi_arready
-   ,output [0:0]s_axi_rid
+   ,output [3:0]s_axi_rid
    ,output [31:0]s_axi_rdata
    ,output [1:0]s_axi_rresp
    ,output s_axi_rlast
    ,output s_axi_rvalid
    ,input s_axi_rready
+   ,input m_aclk
+   ,input m_aresetn
+   ,output [G_AXIS_DATAWIDTH-1:0] m_axi_tdata
+   ,output m_axi_tvalid
+   ,output m_axi_tlast
+   ,input m_axi_tready
 
     );
     
@@ -38,12 +47,14 @@ module dut (
     
 
     
-    blk_mem_gen #(
-        .G_DATAWIDTH  (32),
-        .G_MEMDEPTH  (1024),
-        .G_INIT_FILE (G_INIT_FILE)
+    axi_axis #(
+        .G_AXI_DATAWIDTH  (G_AXI_DATAWIDTH)
+        ,.G_MEMDEPTH  (1024)
+        ,.G_ID_WIDTH  (4)
+        ,.G_INIT_FILE (G_INIT_FILE)
+        ,.G_AXIS_DATAWIDTH  (G_AXIS_DATAWIDTH)
     )
-    i_blk_mem_gen (
+    i_axi_axis (
         .*
     );
 

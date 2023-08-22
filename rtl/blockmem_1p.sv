@@ -23,62 +23,63 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-module blockmem_2p_wrapper (
-    clka
-    , ena
-    , wea
-    , addra
-    , dina
-    , clkb
-    , enb
-    , addrb
-    , doutb
-);
-    parameter integer G_USEIP = 0;
-    parameter integer G_DATAWIDTH = 32;
-    parameter integer G_MEMDEPTH = 1024;
-    parameter integer G_BWENABLE = 0;
-    parameter G_INIT_FILE = "";  // verilog_lint: waive explicit-parameter-storage-type (not supported in vivado)
-    localparam integer G_ADDRWIDTH = $clog2(G_MEMDEPTH);
+module blockmem_1p #(
+    integer G_USEIP = 0
+    , integer G_DATAWIDTH = 32
+    , integer G_MEMDEPTH = 1024
+    , integer G_BWENABLE = 0
+    , G_INIT_FILE = ""  // verilog_lint: waive explicit-parameter-storage-type (not supported in vivado)
+    , integer G_ADDRWIDTH = $clog2(G_MEMDEPTH)
     //localparam integer G_PADWIDTH = ($ceil(real'(G_DATAWIDTH/ 8.0) ) * 8);
     //localparam integer G_PADWIDTH = (integer'((G_DATAWIDTH-1)/8)+1)*8;
-    localparam integer G_PADWIDTH = (G_DATAWIDTH + 7) & ~(4'h7);
-    localparam integer G_WEWIDTH = (((G_PADWIDTH - 1) / 8) * G_BWENABLE) + 1;
-    parameter logic [(G_PADWIDTH*G_MEMDEPTH)-1:0] G_RAM_RESET = 0;
+    , integer G_PADWIDTH = (G_DATAWIDTH + 7) & ~(4'h7)
+    , integer G_WEWIDTH = (((G_PADWIDTH - 1) / 8) * G_BWENABLE) + 1
+    , logic [(G_PADWIDTH*G_MEMDEPTH)-1:0] G_RAM_RESET = 0
 
-    input clka;
-    input ena;
-    input [G_WEWIDTH-1:0] wea;
-    input [G_ADDRWIDTH-1:0] addra;
-    input [G_DATAWIDTH-1:0] dina;
-    input clkb;
-    input enb;
-    input [G_ADDRWIDTH-1:0] addrb;
-    output [G_DATAWIDTH-1:0] doutb;
+) (
+    input clka
+    , input ena
+    , input [G_WEWIDTH-1:0] wea
+    , input [G_ADDRWIDTH-1:0] addra
+    , input [G_DATAWIDTH-1:0] dina
+    , output [G_DATAWIDTH-1:0] douta
+);
 
-    generate
-        if (0 == G_USEIP) begin
-            blockmem_2p #(
-                  .G_DATAWIDTH(G_DATAWIDTH)
-                , .G_MEMDEPTH (G_MEMDEPTH)
-                , .G_BWENABLE (G_BWENABLE)
-                , .G_INIT_FILE(G_INIT_FILE)
-                , .G_RAM_RESET(G_RAM_RESET)
-            ) i_blockmem_2p (
-                .*
-            );
+    localparam integer G_WWIDTH = ((G_PADWIDTH - 1) / 8) + 1;
+    localparam integer G_DIFFWIDTH = G_PADWIDTH - G_DATAWIDTH;
+
+    logic [G_PADWIDTH-1:0] f_ram[0:G_MEMDEPTH-1];
+    logic [G_DATAWIDTH-1:0] f_douta = 0;
+
+    logic [G_WWIDTH-1:0] w_wea;
+    logic [G_PADWIDTH-1:0] w_dina;
+
+    initial begin
+        if (G_INIT_FILE != "") begin
+            $readmemh(G_INIT_FILE, f_ram);
         end else begin
-            blockmem_2p #(
-                  .G_DATAWIDTH(G_DATAWIDTH)
-                , .G_MEMDEPTH (G_MEMDEPTH)
-                , .G_BWENABLE (G_BWENABLE)
-                , .G_INIT_FILE(G_INIT_FILE)
-                , .G_RAM_RESET(G_RAM_RESET)
-            ) i_blockmem_2p (
-                .*
-            );
+            for (integer x = 0; x < G_MEMDEPTH; x = x + 1) begin
+                f_ram[x] = G_RAM_RESET[(x*G_PADWIDTH)+:G_PADWIDTH];
+            end
         end
-    endgenerate
+    end
+
+    always @(*) begin
+        w_dina = (G_DIFFWIDTH == 0) ? dina : {{G_DIFFWIDTH{1'b0}}, dina};
+        w_wea  = G_BWENABLE ? wea : {G_WWIDTH{wea[0]}};
+    end
+
+    always @(posedge clka) begin
+        for (integer i = 0; i < G_WWIDTH; i = i + 1) begin
+            if (ena & w_wea[i]) f_ram[addra][(8*i)+:8] <= w_dina[(8*i)+:8];
+        end
+    end
+
+    always @(posedge clka) begin
+        //if (ena) f_douta <= f_ram[addrb][0+:G_DATAWIDTH];
+        f_douta <= f_ram[addra][0+:G_DATAWIDTH];
+    end
+    assign douta = f_douta;
 
 endmodule
 

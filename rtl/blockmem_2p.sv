@@ -24,16 +24,18 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 module blockmem_2p #(
-    parameter integer G_DATAWIDTH = 32
-    , parameter integer G_MEMDEPTH = 1024
-    , parameter integer G_BWENABLE = 0
-    , parameter G_INIT_FILE = ""  // verilog_lint: waive explicit-parameter-storage-type
-    , parameter integer G_ADDRWIDTH = $clog2(G_MEMDEPTH)
-    //localparam integer G_PADWIDTH = ($ceil(real'(G_DATAWIDTH) / 8) * 8)
-    //localparam integer G_PADWIDTH = (integer'((G_DATAWIDTH-1)/8)+1)*8
-    , parameter integer G_PADWIDTH = (G_DATAWIDTH + 7) & ~(4'h7)
-    , parameter integer G_WEWIDTH = (((G_PADWIDTH - 1) / 8) * G_BWENABLE) + 1
-    , parameter logic [(G_PADWIDTH*G_MEMDEPTH)-1:0] G_RAM_RESET = 0
+    integer G_USEIP = 0
+    , integer G_DATAWIDTH = 32
+    , integer G_MEMDEPTH = 1024
+    , integer G_BWENABLE = 0
+    , G_INIT_FILE = ""  // verilog_lint: waive explicit-parameter-storage-type (not supported in vivado)
+    , integer G_ADDRWIDTH = $clog2(G_MEMDEPTH)
+    //localparam integer G_PADWIDTH = ($ceil(real'(G_DATAWIDTH/ 8.0) ) * 8);
+    //localparam integer G_PADWIDTH = (integer'((G_DATAWIDTH-1)/8)+1)*8;
+    , integer G_PADWIDTH = (G_DATAWIDTH + 7) & ~(4'h7)
+    , integer G_WEWIDTH = (((G_PADWIDTH - 1) / 8) * G_BWENABLE) + 1
+    , logic [(G_PADWIDTH*G_MEMDEPTH)-1:0] G_RAM_RESET = 0
+
 ) (
     input clka
     , input ena
@@ -45,6 +47,7 @@ module blockmem_2p #(
     , input [G_ADDRWIDTH-1:0] addrb
     , output [G_DATAWIDTH-1:0] doutb
 );
+
     localparam integer G_WWIDTH = ((G_PADWIDTH - 1) / 8) + 1;
     localparam integer G_DIFFWIDTH = G_PADWIDTH - G_DATAWIDTH;
 
@@ -54,9 +57,6 @@ module blockmem_2p #(
     logic [G_WWIDTH-1:0] w_wea;
     logic [G_PADWIDTH-1:0] w_dina;
 
-    initial begin
-        $display("\tCFG_INFO: blockmem_2p: %dx%0d\t(instance %m)", G_DATAWIDTH, G_MEMDEPTH);
-    end
     initial begin
         if (G_INIT_FILE != "") begin
             $readmemh(G_INIT_FILE, f_ram);

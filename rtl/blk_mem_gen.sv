@@ -2,14 +2,14 @@ module blk_mem_gen #(
       integer G_DATAWIDTH = 32
     , integer G_MEMDEPTH  = 1024
     , integer G_INIT_FILE = ""
-    , integer G_ID_WIDTH  = 1
+    , integer G_ID_WIDTH  = 4
     , integer G_ADDRWIDTH = $clog2(G_MEMDEPTH)
     , integer G_WEWIDTH   = ((G_DATAWIDTH - 1) / 8) + 1
 ) (
     input s_aclk
     , input s_aresetn
     , input [G_ID_WIDTH-1:0] s_axi_awid
-    , input [G_ADDRWIDTH-1:0] s_axi_awaddr
+    , input [31:0] s_axi_awaddr
     , input [7:0] s_axi_awlen
     , input [2:0] s_axi_awsize
     , input [1:0] s_axi_awburst
@@ -25,7 +25,7 @@ module blk_mem_gen #(
     , output s_axi_bvalid
     , input s_axi_bready
     , input [G_ID_WIDTH-1:0] s_axi_arid
-    , input [G_ADDRWIDTH-1:0] s_axi_araddr
+    , input [31:0] s_axi_araddr
     , input [7:0] s_axi_arlen
     , input [2:0] s_axi_arsize
     , input [1:0] s_axi_arburst
@@ -40,25 +40,25 @@ module blk_mem_gen #(
 );
 
 
-    logic f_axi_awready;
-    logic d_axi_awready;
-    logic f_axi_wready;
-    logic d_axi_wready;
-    logic f_ena;
-    logic d_ena;
-    logic [G_ID_WIDTH-1:0] f_axi_bid;
-    logic [G_ID_WIDTH-1:0] d_axi_bid;
-    logic f_axi_bvalid;
-    logic d_axi_bvalid;
+    reg f_axi_awready;
+    reg d_axi_awready;
+    reg f_axi_wready;
+    reg d_axi_wready;
+    reg f_ena;
+    reg d_ena;
+    reg [G_ID_WIDTH-1:0] f_axi_bid;
+    reg [G_ID_WIDTH-1:0] d_axi_bid;
+    reg f_axi_bvalid;
+    reg d_axi_bvalid;
 
     localparam bit [1:0] WIDLE = 2'b00, WRITE0 = 2'b01, WRITE1 = 2'b10, WRITE2 = 2'b11;
 
-    logic [1:0] f_axi_write_state;
-    logic [1:0] d_axi_write_state;
-    logic [G_ADDRWIDTH-1:0] f_waddr;
-    logic [G_ADDRWIDTH-1:0] d_waddr;
+    reg [1:0] f_axi_write_state;
+    reg [1:0] d_axi_write_state;
+    reg [G_ADDRWIDTH-1:0] f_waddr;
+    reg [G_ADDRWIDTH-1:0] d_waddr;
 
-    logic [G_ADDRWIDTH-1:0] f_waddr_dly;
+    reg [G_ADDRWIDTH-1:0] f_waddr_dly;
 
     always @(posedge s_aclk) begin : p_clk_write
         if (0 == s_aresetn) begin
@@ -130,23 +130,23 @@ module blk_mem_gen #(
     assign s_axi_bvalid = f_axi_bvalid;
 
 
-    logic f_axi_arready;
-    logic d_axi_arready;
-    logic [G_ID_WIDTH-1:0] f_axi_rid;
-    logic [G_ID_WIDTH-1:0] d_axi_rid;
-    logic f_axi_rlast;
-    logic d_axi_rlast;
-    logic f_axi_rvalid;
-    logic d_axi_rvalid;
-    logic [7:0] f_axi_arlen;
-    logic [7:0] d_axi_arlen;
+    reg f_axi_arready;
+    reg d_axi_arready;
+    reg [G_ID_WIDTH-1:0] f_axi_rid;
+    reg [G_ID_WIDTH-1:0] d_axi_rid;
+    reg f_axi_rlast;
+    reg d_axi_rlast;
+    reg f_axi_rvalid;
+    reg d_axi_rvalid;
+    reg [7:0] f_axi_arlen;
+    reg [7:0] d_axi_arlen;
 
     localparam bit [1:0] RIDLE = 2'b00, READ0 = 2'b01, READ1 = 2'b10, READ2 = 2'b11;
 
-    logic [1:0] f_axi_read_state;
-    logic [1:0] d_axi_read_state;
-    logic [G_ADDRWIDTH-1:0] f_raddr;
-    logic [G_ADDRWIDTH-1:0] d_raddr;
+    reg [1:0] f_axi_read_state;
+    reg [1:0] d_axi_read_state;
+    reg [G_ADDRWIDTH-1:0] f_raddr;
+    reg [G_ADDRWIDTH-1:0] d_raddr;
 
     always @(posedge s_aclk) begin : p_clk_read
         if (0 == s_aresetn) begin
@@ -173,12 +173,13 @@ module blk_mem_gen #(
         d_axi_arlen      <= f_axi_arlen;
         d_axi_rid        <= f_axi_rid;
 
-        d_axi_arready    <= 1;
+        d_axi_arready    <= f_axi_arready;
         d_axi_rvalid     <= 0;
         d_axi_rlast      <= 0;
         d_raddr          <= f_raddr;
         case (f_axi_read_state)
             RIDLE: begin
+                d_axi_arready <= 1;
                 if (s_axi_arvalid && f_axi_arready) begin
                     d_axi_arready <= 0;
                     d_axi_rid     <= s_axi_arid;
