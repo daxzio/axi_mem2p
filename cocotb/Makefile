@@ -9,9 +9,9 @@ TOPLEVEL = dut
 MODULE = test_axis
 
 IMPORT_SOURCES += \
-    /home/dkeeshan/projects/verilog-axi/rtl/axi_config_wr.v \
-    /home/dkeeshan/projects/verilog-axi/rtl/axi_config_rd.v \
-    /home/dkeeshan/projects/verilog-axi/rtl/axi_config.v \
+    ~/projects/verilog-axi/rtl/axi_config_wr.v \
+    ~/projects/verilog-axi/rtl/axi_config_rd.v \
+    ~/projects/verilog-axi/rtl/axi_config.v \
 
 RTL_SOURCES += \
     ../rtl/blockmem_1p.sv \
@@ -21,6 +21,7 @@ RTL_SOURCES += \
     ../rtl/blk_mem_gen.sv \
     ../rtl/axi_1p.sv \
     ../rtl/axi_2p.sv \
+    ../rtl/axi_blockram.sv \
     ../rtl/axi_axis.sv \
    
 
