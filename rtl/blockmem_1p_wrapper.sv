@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-module blockmem_2p_wrapper #(
+module blockmem_1p_wrapper #(
     integer G_USEIP = 0
     , integer G_DATAWIDTH = 32
     , integer G_MEMDEPTH = 1024
@@ -42,31 +42,28 @@ module blockmem_2p_wrapper #(
     , input [G_WEWIDTH-1:0] wea
     , input [G_ADDRWIDTH-1:0] addra
     , input [G_DATAWIDTH-1:0] dina
-    , input clkb
-    , input enb
-    , input [G_ADDRWIDTH-1:0] addrb
-    , output [G_DATAWIDTH-1:0] doutb
+    , output [G_DATAWIDTH-1:0] douta
 );
 
     generate
         if (0 == G_USEIP) begin
-            blockmem_2p #(
+            blockmem_1p #(
                   .G_DATAWIDTH(G_DATAWIDTH)
                 , .G_MEMDEPTH (G_MEMDEPTH)
                 , .G_BWENABLE (G_BWENABLE)
                 , .G_INIT_FILE(G_INIT_FILE)
                 , .G_RAM_RESET(G_RAM_RESET)
-            ) i_blockmem_2p (
+            ) i_blockmem_1p (
                 .*
             );
         end else begin
-            blockmem_2p #(
+            blockmem_1p #(
                   .G_DATAWIDTH(G_DATAWIDTH)
                 , .G_MEMDEPTH (G_MEMDEPTH)
                 , .G_BWENABLE (G_BWENABLE)
                 , .G_INIT_FILE(G_INIT_FILE)
                 , .G_RAM_RESET(G_RAM_RESET)
-            ) i_blockmem_2p (
+            ) i_blockmem_1p (
                 .*
             );
         end

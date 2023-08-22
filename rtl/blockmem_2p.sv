@@ -23,40 +23,33 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-module blockmem_2p (
-    clka
-    , ena
-    , wea
-    , addra
-    , dina
-    , clkb
-    , enb
-    , addrb
-    , doutb
-);
-    parameter integer G_DATAWIDTH = 32;
-    parameter integer G_MEMDEPTH = 1024;
-    parameter integer G_BWENABLE = 0;
-    parameter G_INIT_FILE = "";  // verilog_lint: waive explicit-parameter-storage-type
-    localparam integer G_ADDRWIDTH = $clog2(G_MEMDEPTH);
-    //localparam integer G_PADWIDTH = ($ceil(real'(G_DATAWIDTH) / 8) * 8);
+module blockmem_2p #(
+    integer G_USEIP = 0
+    , integer G_DATAWIDTH = 32
+    , integer G_MEMDEPTH = 1024
+    , integer G_BWENABLE = 0
+    , G_INIT_FILE = ""  // verilog_lint: waive explicit-parameter-storage-type (not supported in vivado)
+    , integer G_ADDRWIDTH = $clog2(G_MEMDEPTH)
+    //localparam integer G_PADWIDTH = ($ceil(real'(G_DATAWIDTH/ 8.0) ) * 8);
     //localparam integer G_PADWIDTH = (integer'((G_DATAWIDTH-1)/8)+1)*8;
-    localparam integer G_PADWIDTH = (G_DATAWIDTH + 7) & ~(4'h7);
-    localparam integer G_WEWIDTH = (((G_PADWIDTH - 1) / 8) * G_BWENABLE) + 1;
+    , integer G_PADWIDTH = (G_DATAWIDTH + 7) & ~(4'h7)
+    , integer G_WEWIDTH = (((G_PADWIDTH - 1) / 8) * G_BWENABLE) + 1
+    , logic [(G_PADWIDTH*G_MEMDEPTH)-1:0] G_RAM_RESET = 0
+
+) (
+    input clka
+    , input ena
+    , input [G_WEWIDTH-1:0] wea
+    , input [G_ADDRWIDTH-1:0] addra
+    , input [G_DATAWIDTH-1:0] dina
+    , input clkb
+    , input enb
+    , input [G_ADDRWIDTH-1:0] addrb
+    , output [G_DATAWIDTH-1:0] doutb
+);
+
     localparam integer G_WWIDTH = ((G_PADWIDTH - 1) / 8) + 1;
     localparam integer G_DIFFWIDTH = G_PADWIDTH - G_DATAWIDTH;
-
-    parameter logic [(G_PADWIDTH*G_MEMDEPTH)-1:0] G_RAM_RESET = 0;
-
-    input clka;
-    input ena;
-    input [G_WEWIDTH-1:0] wea;
-    input [G_ADDRWIDTH-1:0] addra;
-    input [G_DATAWIDTH-1:0] dina;
-    input clkb;
-    input enb;
-    input [G_ADDRWIDTH-1:0] addrb;
-    output [G_DATAWIDTH-1:0] doutb;
 
     logic [G_PADWIDTH-1:0] f_ram[0:G_MEMDEPTH-1];
     logic [G_DATAWIDTH-1:0] f_doutb = 0;

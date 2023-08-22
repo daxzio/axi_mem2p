@@ -46,6 +46,8 @@ async def test_dut_simple(dut):
     
     await tb.cr.wait_clkn(200)
     
+    await tb.axi.write(0x00000000, length=6)
+    
     await tb.axi.write(0x00000000, 0x2222222211111111)
     await tb.axi.read(0x00000000, 0x2222222211111111)
     
@@ -73,37 +75,99 @@ async def test_dut_delay(dut):
     await tb.axi.write(0x00000000, 0x0000000800000007000000060000000500000004000000030000000200000001)
     await tb.axi.read(0x00000000, 0x0000000800000007000000060000000500000004000000030000000200000001)
     
-    await tb.axi.write(0x00000000, length=256)
-    await tb.axi.read(0x00000000, tb.axi.writedata)
-
-    await tb.axi.write(0x00000000, length=256)
-    await tb.axi.read(0x00000000, tb.axi.writedata)
-
-    await tb.axi.write(0x00000000, length=256)
-    await tb.axi.read(0x00000000, tb.axi.writedata)
-
-    await tb.axi.write(0x00000000, length=4)
-    await tb.axi.read(0x00000000, tb.axi.writedata)
-    await tb.axi.write(0x00000000, length=4)
-    await tb.axi.read(0x00000000, tb.axi.writedata)
-    await tb.axi.write(0x00000000, length=4)
-    await tb.axi.read(0x00000000, tb.axi.writedata)
-    await tb.axi.write(0x00000000, length=4)
-    await tb.axi.read(0x00000000, tb.axi.writedata)
-    await tb.axi.write(0x00000000, length=4)
-    await tb.axi.read(0x00000000, tb.axi.writedata)
-    await tb.axi.write(0x00000000, length=4)
-    await tb.axi.read(0x00000000, tb.axi.writedata)
-    await tb.axi.write(0x00000000, length=4)
-    await tb.axi.read(0x00000000, tb.axi.writedata)
-    await tb.axi.write(0x00000000, length=4)
-    await tb.axi.read(0x00000000, tb.axi.writedata)
-    await tb.axi.write(0x00000000, length=4)
-    await tb.axi.read(0x00000000, tb.axi.writedata)
-
     await tb.axi.write(0x00000000, length=8)
     await tb.axi.read(0x00000000, tb.axi.writedata)
+    await tb.axi.write(0x00000000, length=8)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+    await tb.axi.write(0x00000000, length=8)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+    await tb.axi.write(0x00000000, length=8)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+    await tb.axi.write(0x00000000, length=8)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+    await tb.axi.write(0x00000000, length=8)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+
+
+
+
+    await tb.axi.write(0x00000000, length=256)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+
+    await tb.axi.write(0x00000000, length=256)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+
+    await tb.axi.write(0x00000000, length=256)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+
+    await tb.axi.write(0x00000000, length=4)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+    await tb.axi.write(0x00000000, length=4)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+    await tb.axi.write(0x00000000, length=4)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+    await tb.axi.write(0x00000000, length=4)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+    await tb.axi.write(0x00000000, length=4)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+    await tb.axi.write(0x00000000, length=4)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+    await tb.axi.write(0x00000000, length=4)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+    await tb.axi.write(0x00000000, length=4)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+    await tb.axi.write(0x00000000, length=4)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+
+    await tb.axi.write(0x00000000, length=64)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+    await tb.axi.write(0x00000000, length=64)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+    await tb.axi.write(0x00000000, length=64)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+    await tb.axi.write(0x00000000, length=64)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+    await tb.axi.write(0x00000000, length=64)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+    await tb.axi.write(0x00000000, length=64)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
+    await tb.axi.write(0x00000000, length=64)
+    await tb.axi.read(0x00000000, tb.axi.writedata)
     
+    await tb.cr.wait_clkn(200)
+          
+    await tb.cr.end_test()
+
+@test()
+async def test_dut_rdwr(dut):
+    
+    tb = testbench(dut, reset_sense=0)
+    #tb.axi.enable_backpressure(13)
+ 
+
+    await tb.cr.start_test()
+    
+    await tb.cr.wait_clkn(200)
+    
+    tb.axi.write_nowait(0x00000040, length=32)
+    data0 = tb.axi.writedata
+    await tb.cr.wait_clkn(3)
+    tb.axi.read_nowait(0x00000140, length=32)
+    tb.axi.write_nowait(0x00000080, length=32)
+    data1 = tb.axi.writedata
+    tb.axi.read_nowait(0x00000180, length=32)
+    
+#     tb.
+    await tb.axi.read_op.wait()
+    await tb.axi.write_op.wait()
+    await tb.cr.wait_clkn(20)
+    
+    await tb.axi.write(0x00000000, length=32)
+    await tb.axi.read(0x00000000, length=32)
+
+    await tb.axi.read(0x00000040, data0)
+    await tb.axi.read(0x00000080, data1)
+
     await tb.cr.wait_clkn(200)
           
     await tb.cr.end_test()

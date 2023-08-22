@@ -173,12 +173,13 @@ module blk_mem_gen #(
         d_axi_arlen      <= f_axi_arlen;
         d_axi_rid        <= f_axi_rid;
 
-        d_axi_arready    <= 1;
+        d_axi_arready    <= f_axi_arready;
         d_axi_rvalid     <= 0;
         d_axi_rlast      <= 0;
         d_raddr          <= f_raddr;
         case (f_axi_read_state)
             RIDLE: begin
+                d_axi_arready <= 1;
                 if (s_axi_arvalid && f_axi_arready) begin
                     d_axi_arready <= 0;
                     d_axi_rid     <= s_axi_arid;
