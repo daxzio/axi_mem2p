@@ -51,11 +51,11 @@ module blockmem_2p #(
     localparam integer G_WWIDTH = ((G_PADWIDTH - 1) / 8) + 1;
     localparam integer G_DIFFWIDTH = G_PADWIDTH - G_DATAWIDTH;
 
-    logic [G_PADWIDTH-1:0] f_ram[0:G_MEMDEPTH-1];
+    logic [ G_PADWIDTH-1:0] f_ram       [0:G_MEMDEPTH-1];
     logic [G_DATAWIDTH-1:0] f_doutb = 0;
 
-    logic [G_WWIDTH-1:0] w_wea;
-    logic [G_PADWIDTH-1:0] w_dina;
+    logic [   G_WWIDTH-1:0] w_wea;
+    logic [ G_PADWIDTH-1:0] w_dina;
 
     initial begin
         if (G_INIT_FILE != "") begin
