@@ -2,7 +2,7 @@ module axi_blockram #(
       integer G_AXI_DATAWIDTH  = 32
     , integer G_AXIS_DATAWIDTH = 32
     , integer G_MEMDEPTH       = 1024
-    , integer G_INIT_FILE      = ""
+    , parameter G_INIT_FILE      = "" // verilog_lint: waive explicit-parameter-storage-type (not supported in vivado)
     , integer G_ADDRWIDTH      = $clog2(G_MEMDEPTH)
     , integer G_WSTRB          = ((G_AXI_DATAWIDTH - 1) / 8) + 1
     , integer G_WEWIDTH        = ((G_AXIS_DATAWIDTH - 1) / 8) + 1

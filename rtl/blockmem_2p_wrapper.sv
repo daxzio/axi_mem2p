@@ -28,23 +28,22 @@ module blockmem_2p_wrapper #(
     , integer G_DATAWIDTH = 32
     , integer G_MEMDEPTH = 1024
     , integer G_BWENABLE = 0
-    , G_INIT_FILE = ""  // verilog_lint: waive explicit-parameter-storage-type (not supported in vivado)
+    , parameter G_INIT_FILE = ""  // verilog_lint: waive explicit-parameter-storage-type (not supported in vivado)
     , integer G_ADDRWIDTH = $clog2(G_MEMDEPTH)
     //localparam integer G_PADWIDTH = ($ceil(real'(G_DATAWIDTH/ 8.0) ) * 8);
     //localparam integer G_PADWIDTH = (integer'((G_DATAWIDTH-1)/8)+1)*8;
     , integer G_PADWIDTH = (G_DATAWIDTH + 7) & ~(4'h7)
     , integer G_WEWIDTH = (((G_PADWIDTH - 1) / 8) * G_BWENABLE) + 1
-    , logic [(G_PADWIDTH*G_MEMDEPTH)-1:0] G_RAM_RESET = 0
 
 ) (
-    input clka
-    , input ena
-    , input [G_WEWIDTH-1:0] wea
-    , input [G_ADDRWIDTH-1:0] addra
-    , input [G_DATAWIDTH-1:0] dina
-    , input clkb
-    , input enb
-    , input [G_ADDRWIDTH-1:0] addrb
+      input                    clka
+    , input                    ena
+    , input  [  G_WEWIDTH-1:0] wea
+    , input  [G_ADDRWIDTH-1:0] addra
+    , input  [G_DATAWIDTH-1:0] dina
+    , input                    clkb
+    , input                    enb
+    , input  [G_ADDRWIDTH-1:0] addrb
     , output [G_DATAWIDTH-1:0] doutb
 );
 
@@ -55,7 +54,6 @@ module blockmem_2p_wrapper #(
                 , .G_MEMDEPTH (G_MEMDEPTH)
                 , .G_BWENABLE (G_BWENABLE)
                 , .G_INIT_FILE(G_INIT_FILE)
-                , .G_RAM_RESET(G_RAM_RESET)
             ) i_blockmem_2p (
                 .*
             );
@@ -65,7 +63,6 @@ module blockmem_2p_wrapper #(
                 , .G_MEMDEPTH (G_MEMDEPTH)
                 , .G_BWENABLE (G_BWENABLE)
                 , .G_INIT_FILE(G_INIT_FILE)
-                , .G_RAM_RESET(G_RAM_RESET)
             ) i_blockmem_2p (
                 .*
             );
