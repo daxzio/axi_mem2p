@@ -40,21 +40,21 @@ module blk_mem_gen #(
 );
 
 
-    reg f_axi_awready;
-    reg d_axi_awready;
-    reg f_axi_wready;
-    reg d_axi_wready;
-    reg f_ena;
-    reg d_ena;
+    reg                  f_axi_awready;
+    reg                  d_axi_awready;
+    reg                  f_axi_wready;
+    reg                  d_axi_wready;
+    reg                  f_ena;
+    reg                  d_ena;
     reg [G_ID_WIDTH-1:0] f_axi_bid;
     reg [G_ID_WIDTH-1:0] d_axi_bid;
-    reg f_axi_bvalid;
-    reg d_axi_bvalid;
+    reg                  f_axi_bvalid;
+    reg                  d_axi_bvalid;
 
     localparam bit [1:0] WIDLE = 2'b00, WRITE0 = 2'b01, WRITE1 = 2'b10, WRITE2 = 2'b11;
 
-    reg [1:0] f_axi_write_state;
-    reg [1:0] d_axi_write_state;
+    reg [            1:0] f_axi_write_state;
+    reg [            1:0] d_axi_write_state;
     reg [G_ADDRWIDTH-1:0] f_waddr;
     reg [G_ADDRWIDTH-1:0] d_waddr;
 
@@ -130,21 +130,21 @@ module blk_mem_gen #(
     assign s_axi_bvalid = f_axi_bvalid;
 
 
-    reg f_axi_arready;
-    reg d_axi_arready;
+    reg                  f_axi_arready;
+    reg                  d_axi_arready;
     reg [G_ID_WIDTH-1:0] f_axi_rid;
     reg [G_ID_WIDTH-1:0] d_axi_rid;
-    reg f_axi_rlast;
-    reg d_axi_rlast;
-    reg f_axi_rvalid;
-    reg d_axi_rvalid;
-    reg [7:0] f_axi_arlen;
-    reg [7:0] d_axi_arlen;
+    reg                  f_axi_rlast;
+    reg                  d_axi_rlast;
+    reg                  f_axi_rvalid;
+    reg                  d_axi_rvalid;
+    reg [           7:0] f_axi_arlen;
+    reg [           7:0] d_axi_arlen;
 
     localparam bit [1:0] RIDLE = 2'b00, READ0 = 2'b01, READ1 = 2'b10, READ2 = 2'b11;
 
-    reg [1:0] f_axi_read_state;
-    reg [1:0] d_axi_read_state;
+    reg [            1:0] f_axi_read_state;
+    reg [            1:0] d_axi_read_state;
     reg [G_ADDRWIDTH-1:0] f_raddr;
     reg [G_ADDRWIDTH-1:0] d_raddr;
 
