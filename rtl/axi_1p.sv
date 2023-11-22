@@ -19,7 +19,7 @@ module axi_1p #(
       input                       s_aclk
     , input                       s_aresetn
     , input  [    G_ID_WIDTH-1:0] s_axi_awid
-    , input  [   G_ADDRWIDTH-1:0] s_axi_awaddr
+    , input  [              31:0] s_axi_awaddr
     , input  [               7:0] s_axi_awlen
     , input  [               2:0] s_axi_awsize
     , input  [               1:0] s_axi_awburst
@@ -43,7 +43,7 @@ module axi_1p #(
     , output                      s_axi_bvalid
     , input                       s_axi_bready
     , input  [    G_ID_WIDTH-1:0] s_axi_arid
-    , input  [   G_ADDRWIDTH-1:0] s_axi_araddr
+    , input  [              31:0] s_axi_araddr
     , input  [               7:0] s_axi_arlen
     , input  [               2:0] s_axi_arsize
     , input  [               1:0] s_axi_arburst
@@ -65,19 +65,19 @@ module axi_1p #(
 );
 
 
-    logic [G_ADDRWIDTH-1:0] w_raddr;
-    logic [G_ADDRWIDTH-1:0] w_waddr;
+    logic [G_ADDRWIDTH+1:0] w_raddr;
+    logic [G_ADDRWIDTH+1:0] w_waddr;
     logic [G_DATAWIDTH-1:0] w_rdata;
     logic [G_DATAWIDTH-1:0] w_wdata;
     logic [  G_WEWIDTH-1:0] w_wstrb;
     logic                   w_rd;
     logic                   w_wr;
+    logic                   w_ena;
     logic [  G_WEWIDTH-1:0] w_wea;
-    logic [  G_WEWIDTH-1:0] w_web;
     logic                   f_rvalid;
 
     axi_config #(
-          .ADDR_WIDTH   (G_ADDRWIDTH)
+          .ADDR_WIDTH   (G_ADDRWIDTH + 2)
         , .DATA_WIDTH   (G_DATAWIDTH)
         , .ID_WIDTH     (G_ID_WIDTH)
         , .AWUSER_ENABLE(G_AWUSER_ENABLE)
@@ -91,22 +91,25 @@ module axi_1p #(
         , .RUSER_ENABLE (G_RUSER_ENABLE)
         , .RUSER_WIDTH  (G_RUSER_WIDTH)
         , .SINGLE_ADDR  (1)
-        , .REG_DATA     (0)
+        , .REG_DATA     (1)
     ) i_axi_config (
         .*
-        , .clk   (s_aclk)
-        , .rst   (~s_aresetn)
-        , .rd    (w_rd)
-        , .raddr (w_raddr)
-        , .rdata (w_rdata)
-        , .rvalid(f_rvalid)
-        , .wr    (w_wr)
-        , .waddr (w_waddr)
-        , .wdata (w_wdata)
-        , .wstrb (w_wstrb)
+        , .clk         (s_aclk)
+        , .rst         (~s_aresetn)
+        , .rd          (w_rd)
+        , .raddr       (w_raddr)
+        , .rdata       (w_rdata)
+        , .rvalid      (f_rvalid)
+        , .wr          (w_wr)
+        , .waddr       (w_waddr)
+        , .wdata       (w_wdata)
+        , .wstrb       (w_wstrb)
+        , .s_axi_awaddr(s_axi_awaddr[G_ADDRWIDTH+1:0])
+        , .s_axi_araddr(s_axi_araddr[G_ADDRWIDTH+1:0])
     );
 
 
+    assign w_ena = w_wr | w_rd;
     assign w_wea = w_wstrb;
 
     always @(posedge s_aclk) begin
@@ -120,9 +123,9 @@ module axi_1p #(
         , .G_INIT_FILE(G_INIT_FILE)
     ) i_blockmem_1p (
           .clka (s_aclk)
-        , .ena  (w_wr)
+        , .ena  (w_ena)
         , .wea  (w_wea)
-        , .addra(w_waddr)
+        , .addra(w_waddr[G_ADDRWIDTH+1:2])
         , .dina (w_wdata)
         , .douta(w_rdata)
     );

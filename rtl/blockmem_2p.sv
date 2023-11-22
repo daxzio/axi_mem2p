@@ -50,21 +50,21 @@ module blockmem_2p #(
     localparam integer G_WWIDTH = ((G_PADWIDTH - 1) / 8) + 1;
     localparam integer G_DIFFWIDTH = G_PADWIDTH - G_DATAWIDTH;
 
-    logic  [ G_PADWIDTH-1:0] f_ram       [0:G_MEMDEPTH];
-    logic  [G_DATAWIDTH-1:0] f_doutb = 0;
+    logic [ G_PADWIDTH-1:0] f_ram       [0:G_MEMDEPTH];
+    logic [G_DATAWIDTH-1:0] f_doutb = 0;
 
-    logic  [   G_WWIDTH-1:0] w_wea;
-    logic  [ G_PADWIDTH-1:0] w_dina;
+    logic [   G_WWIDTH-1:0] w_wea;
+    logic [ G_PADWIDTH-1:0] w_dina;
 
     //string                   dummy;
 
     initial begin
         if (G_INIT_FILE != "") begin
             //if (1 == $sscanf(G_INIT_FILE, "%s.hex", dummy)) begin
-                $readmemh(G_INIT_FILE, f_ram, 0, G_MEMDEPTH-1);
-//             end else begin
-//                 $readmemb(G_INIT_FILE, f_ram, 0, G_MEMDEPTH-1);
-//             end
+            $readmemh(G_INIT_FILE, f_ram, 0, G_MEMDEPTH - 1);
+            //             end else begin
+            //                 $readmemb(G_INIT_FILE, f_ram, 0, G_MEMDEPTH-1);
+            //             end
         end else begin
             for (integer x = 0; x < G_MEMDEPTH; x = x + 1) begin
                 f_ram[x] = 0;

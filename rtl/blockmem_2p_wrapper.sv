@@ -48,7 +48,7 @@ module blockmem_2p_wrapper #(
 );
 
     generate
-        if (0 == G_USEIP) begin
+        if (0 == G_USEIP) begin : g_blockmem_2p
             blockmem_2p #(
                   .G_DATAWIDTH(G_DATAWIDTH)
                 , .G_MEMDEPTH (G_MEMDEPTH)
@@ -57,7 +57,7 @@ module blockmem_2p_wrapper #(
             ) i_blockmem_2p (
                 .*
             );
-        end else begin
+        end else begin : g_ip_blockmem_2p
             blockmem_2p #(
                   .G_DATAWIDTH(G_DATAWIDTH)
                 , .G_MEMDEPTH (G_MEMDEPTH)

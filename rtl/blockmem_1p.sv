@@ -34,32 +34,31 @@ module blockmem_1p #(
     //localparam integer G_PADWIDTH = (integer'((G_DATAWIDTH-1)/8)+1)*8;
     , integer G_PADWIDTH = (G_DATAWIDTH + 7) & ~(4'h7)
     , integer G_WEWIDTH = (((G_PADWIDTH - 1) / 8) * G_BWENABLE) + 1
-//     , logic [(G_PADWIDTH*G_MEMDEPTH)-1:0] G_RAM_RESET = 0
 
 ) (
-    input clka
-    , input ena
-    , input [G_WEWIDTH-1:0] wea
-    , input [G_ADDRWIDTH-1:0] addra
-    , input [G_DATAWIDTH-1:0] dina
+      input                    clka
+    , input                    ena
+    , input  [  G_WEWIDTH-1:0] wea
+    , input  [G_ADDRWIDTH-1:0] addra
+    , input  [G_DATAWIDTH-1:0] dina
     , output [G_DATAWIDTH-1:0] douta
 );
 
     localparam integer G_WWIDTH = ((G_PADWIDTH - 1) / 8) + 1;
     localparam integer G_DIFFWIDTH = G_PADWIDTH - G_DATAWIDTH;
 
-    logic [G_PADWIDTH-1:0] f_ram[0:G_MEMDEPTH-1];
+    logic [ G_PADWIDTH-1:0] f_ram       [0:G_MEMDEPTH-1];
     logic [G_DATAWIDTH-1:0] f_douta = 0;
 
-    logic [G_WWIDTH-1:0] w_wea;
-    logic [G_PADWIDTH-1:0] w_dina;
+    logic [   G_WWIDTH-1:0] w_wea;
+    logic [ G_PADWIDTH-1:0] w_dina;
 
     //string                   dummy;
 
     initial begin
         if (G_INIT_FILE != "") begin
             //if (1 == $sscanf(G_INIT_FILE, "%s.hex", dummy)) begin
-                $readmemh(G_INIT_FILE, f_ram, 0, G_MEMDEPTH-1);
+            $readmemh(G_INIT_FILE, f_ram, 0, G_MEMDEPTH - 1);
             //end else begin
             //    $readmemb(G_INIT_FILE, f_ram, 0, G_MEMDEPTH-1);
             //end
@@ -82,7 +81,6 @@ module blockmem_1p #(
     end
 
     always @(posedge clka) begin
-        //if (ena) f_douta <= f_ram[addrb][0+:G_DATAWIDTH];
         f_douta <= f_ram[addra][0+:G_DATAWIDTH];
     end
     assign douta = f_douta;

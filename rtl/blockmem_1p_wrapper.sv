@@ -36,11 +36,11 @@ module blockmem_1p_wrapper #(
     , integer G_WEWIDTH = (((G_PADWIDTH - 1) / 8) * G_BWENABLE) + 1
 
 ) (
-    input clka
-    , input ena
-    , input [G_WEWIDTH-1:0] wea
-    , input [G_ADDRWIDTH-1:0] addra
-    , input [G_DATAWIDTH-1:0] dina
+      input                    clka
+    , input                    ena
+    , input  [  G_WEWIDTH-1:0] wea
+    , input  [G_ADDRWIDTH-1:0] addra
+    , input  [G_DATAWIDTH-1:0] dina
     , output [G_DATAWIDTH-1:0] douta
 );
 
