@@ -159,13 +159,15 @@ module axi_config #
             
             always @* begin
                 d_write_transaction = f_write_transaction;
-                d_read_transaction = f_read_transaction;
                 if (1 == w_axi_awvalid && 1 == w_axi_awready && 0 == f_read_transaction) begin
                     d_write_transaction = 1;
                 end
                 if (s_axi_wlast) begin
                     d_write_transaction = 0;
                 end
+            end
+            always @* begin
+                d_read_transaction = f_read_transaction;
                 if (1 == w_axi_arvalid && 1 == w_axi_arready && 0 == f_write_transaction) begin
                     d_read_transaction = 1;
                 end
@@ -173,7 +175,6 @@ module axi_config #
                     d_read_transaction = 0;
                 end
             end
-
             always @(posedge clk) begin
                 if (rst) begin
                     f_write_transaction <= 0;
