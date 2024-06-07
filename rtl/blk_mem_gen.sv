@@ -6,37 +6,37 @@ module blk_mem_gen #(
     , integer G_ADDRWIDTH = $clog2(G_MEMDEPTH)
     , integer G_WEWIDTH   = ((G_DATAWIDTH - 1) / 8) + 1
 ) (
-    input s_aclk
-    , input s_aresetn
-    , input [G_ID_WIDTH-1:0] s_axi_awid
-    , input [31:0] s_axi_awaddr
-    , input [7:0] s_axi_awlen
-    , input [2:0] s_axi_awsize
-    , input [1:0] s_axi_awburst
-    , input s_axi_awvalid
-    , output s_axi_awready
-    , input [G_DATAWIDTH-1:0] s_axi_wdata
-    , input [3:0] s_axi_wstrb
-    , input s_axi_wlast
-    , input s_axi_wvalid
-    , output s_axi_wready
-    , output [G_ID_WIDTH-1:0] s_axi_bid
-    , output [1:0] s_axi_bresp
-    , output s_axi_bvalid
-    , input s_axi_bready
-    , input [G_ID_WIDTH-1:0] s_axi_arid
-    , input [31:0] s_axi_araddr
-    , input [7:0] s_axi_arlen
-    , input [2:0] s_axi_arsize
-    , input [1:0] s_axi_arburst
-    , input s_axi_arvalid
-    , output s_axi_arready
-    , output [G_ID_WIDTH-1:0] s_axi_rid
+      input                    s_aclk
+    , input                    s_aresetn
+    , input  [ G_ID_WIDTH-1:0] s_axi_awid
+    , input  [           31:0] s_axi_awaddr
+    , input  [            7:0] s_axi_awlen
+    , input  [            2:0] s_axi_awsize
+    , input  [            1:0] s_axi_awburst
+    , input                    s_axi_awvalid
+    , output                   s_axi_awready
+    , input  [G_DATAWIDTH-1:0] s_axi_wdata
+    , input  [            3:0] s_axi_wstrb
+    , input                    s_axi_wlast
+    , input                    s_axi_wvalid
+    , output                   s_axi_wready
+    , output [ G_ID_WIDTH-1:0] s_axi_bid
+    , output [            1:0] s_axi_bresp
+    , output                   s_axi_bvalid
+    , input                    s_axi_bready
+    , input  [ G_ID_WIDTH-1:0] s_axi_arid
+    , input  [           31:0] s_axi_araddr
+    , input  [            7:0] s_axi_arlen
+    , input  [            2:0] s_axi_arsize
+    , input  [            1:0] s_axi_arburst
+    , input                    s_axi_arvalid
+    , output                   s_axi_arready
+    , output [ G_ID_WIDTH-1:0] s_axi_rid
     , output [G_DATAWIDTH-1:0] s_axi_rdata
-    , output [1:0] s_axi_rresp
-    , output s_axi_rlast
-    , output s_axi_rvalid
-    , input s_axi_rready
+    , output [            1:0] s_axi_rresp
+    , output                   s_axi_rlast
+    , output                   s_axi_rvalid
+    , input                    s_axi_rready
 );
 
 
@@ -124,10 +124,10 @@ module blk_mem_gen #(
     end
 
     assign s_axi_awready = f_axi_awready;
-    assign s_axi_wready = f_axi_wready;
-    assign s_axi_bid = f_axi_bid;
-    assign s_axi_bresp = 0;
-    assign s_axi_bvalid = f_axi_bvalid;
+    assign s_axi_wready  = f_axi_wready;
+    assign s_axi_bid     = f_axi_bid;
+    assign s_axi_bresp   = 0;
+    assign s_axi_bvalid  = f_axi_bvalid;
 
 
     reg                  f_axi_arready;
@@ -220,10 +220,10 @@ module blk_mem_gen #(
         endcase
     end
     assign s_axi_arready = f_axi_arready;
-    assign s_axi_rid = f_axi_rid;
-    assign s_axi_rresp = 0;
-    assign s_axi_rlast = f_axi_rlast;
-    assign s_axi_rvalid = f_axi_rvalid;
+    assign s_axi_rid     = f_axi_rid;
+    assign s_axi_rresp   = 0;
+    assign s_axi_rlast   = f_axi_rlast;
+    assign s_axi_rvalid  = f_axi_rvalid;
 
 
 
@@ -239,12 +239,12 @@ module blk_mem_gen #(
     assign s_axi_rdata = w_doutb;
 
     //assign  w_ena   = f_axi_wready & s_axi_wvalid;
-    assign w_ena = d_ena;
-    assign w_wea = {G_WEWIDTH{1'b1}};
-    assign w_dina = s_axi_wdata[G_DATAWIDTH-1:0];
-    assign w_enb = d_axi_rvalid;
-    assign w_web = {G_WEWIDTH{1'b1}};
-    assign w_raddr = d_raddr;
+    assign w_ena       = d_ena;
+    assign w_wea       = {G_WEWIDTH{1'b1}};
+    assign w_dina      = s_axi_wdata[G_DATAWIDTH-1:0];
+    assign w_enb       = d_axi_rvalid;
+    assign w_web       = {G_WEWIDTH{1'b1}};
+    assign w_raddr     = d_raddr;
 
     blockmem_2p_wrapper #(
           .G_DATAWIDTH(G_DATAWIDTH)

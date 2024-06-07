@@ -1,12 +1,12 @@
 module axi_blockram #(
-      integer G_AXI_DATAWIDTH  = 32
+    integer G_AXI_DATAWIDTH = 32
     , integer G_AXIS_DATAWIDTH = 32
-    , integer G_MEMDEPTH       = 1024
-    , parameter G_INIT_FILE      = "" // verilog_lint: waive explicit-parameter-storage-type (not supported in vivado)
-    , integer G_ADDRWIDTH      = $clog2(G_MEMDEPTH)
-    , integer G_WSTRB          = ((G_AXI_DATAWIDTH - 1) / 8) + 1
-    , integer G_WEWIDTH        = ((G_AXIS_DATAWIDTH - 1) / 8) + 1
-    , integer G_AXI_PACK       = (G_AXIS_DATAWIDTH + 31) / G_AXI_DATAWIDTH
+    , integer G_MEMDEPTH = 1024
+    , parameter G_INIT_FILE = ""  // verilog_lint: waive explicit-parameter-storage-type (not supported in vivado)
+    , integer G_ADDRWIDTH = $clog2(G_MEMDEPTH)
+    , integer G_WSTRB = ((G_AXI_DATAWIDTH - 1) / 8) + 1
+    , integer G_WEWIDTH = ((G_AXIS_DATAWIDTH - 1) / 8) + 1
+    , integer G_AXI_PACK = (G_AXIS_DATAWIDTH + 31) / G_AXI_DATAWIDTH
 ) (
       input                         s_aclk
     , input                         s_aresetn
@@ -65,36 +65,36 @@ module axi_blockram #(
 
     always @(posedge s_aclk) begin : p_clk_reset_axis
         if (0 == s_aresetn) begin
-            f_axis_state <= STATE_IDLE;
-            f_axis_raddr <= 0;
-            f_axis_rdata <= 0;
-            f_axis_rd <= 0;
+            f_axis_state  <= STATE_IDLE;
+            f_axis_raddr  <= 0;
+            f_axis_rdata  <= 0;
+            f_axis_rd     <= 0;
             f_axis_tvalid <= 0;
-            f_axis_tlast <= 0;
-            f_axis_cnt <= 0;
-            f_thres <= 0;
+            f_axis_tlast  <= 0;
+            f_axis_cnt    <= 0;
+            f_thres       <= 0;
         end else begin
-            f_axis_state <= d_axis_state;
-            f_axis_raddr <= d_axis_raddr;
-            f_axis_rdata <= d_axis_rdata;
-            f_axis_rd    <= d_axis_rd   ;
-            f_axis_tvalid<= d_axis_tvalid;
-            f_axis_tlast<= d_axis_tlast;
-            f_axis_cnt<= d_axis_cnt;
-            f_thres <= d_thres;
+            f_axis_state  <= d_axis_state;
+            f_axis_raddr  <= d_axis_raddr;
+            f_axis_rdata  <= d_axis_rdata;
+            f_axis_rd     <= d_axis_rd;
+            f_axis_tvalid <= d_axis_tvalid;
+            f_axis_tlast  <= d_axis_tlast;
+            f_axis_cnt    <= d_axis_cnt;
+            f_thres       <= d_thres;
         end
         f_axi_raddr <= raddr;
     end
 
     always @* begin
-        d_axis_state = f_axis_state;
-        d_axis_raddr = f_axis_raddr;
-        d_axis_rdata = w_rdata;
-        d_axis_rd    = 0 ;
+        d_axis_state  = f_axis_state;
+        d_axis_raddr  = f_axis_raddr;
+        d_axis_rdata  = w_rdata;
+        d_axis_rd     = 0;
         d_axis_tvalid = f_axis_tvalid;
-        d_axis_tlast = f_axis_tlast;
-        d_axis_cnt = f_axis_cnt;
-        d_thres    = 1 ;
+        d_axis_tlast  = f_axis_tlast;
+        d_axis_cnt    = f_axis_cnt;
+        d_thres       = 1;
         case (f_axis_state)
             STATE_IDLE: begin
                 d_axis_tvalid = 0;
@@ -102,14 +102,14 @@ module axi_blockram #(
                 if (f_thres && m_axi_tready) begin
                     d_axis_state = STATE_RDY;
                     //d_axis_raddr = 0;
-                    d_axis_cnt = 0;
-                    d_axis_rd = 1;
+                    d_axis_cnt   = 0;
+                    d_axis_rd    = 1;
                 end
             end
             STATE_RDY: begin
                 if (m_axi_tready) begin
                     d_axis_tvalid = 1;
-                    d_axis_rd = 1;
+                    d_axis_rd     = 1;
                     if ((f_axi_frame_length / G_AXI_PACK) - 1 == f_axis_cnt) begin
                         d_axis_state = STATE_LAST;
                         d_axis_tlast = 1;
@@ -131,12 +131,12 @@ module axi_blockram #(
         endcase
     end
 
-    assign m_axi_tdata = d_axis_rdata;
+    assign m_axi_tdata  = d_axis_rdata;
     assign m_axi_tvalid = f_axis_tvalid;
-    assign m_axi_tlast = f_axis_tlast;
+    assign m_axi_tlast  = f_axis_tlast;
 
-    assign w_raddr = rd ? raddr[(G_AXI_PACK+1)+:$bits(raddr)-G_AXI_PACK-1] : f_axis_raddr;
-    assign w_rd = rd | d_axis_rd;
+    assign w_raddr      = rd ? raddr[(G_AXI_PACK+1)+:$bits(raddr)-G_AXI_PACK-1] : f_axis_raddr;
+    assign w_rd         = rd | d_axis_rd;
 
     generate
         if (G_AXI_PACK <= 1) begin
@@ -152,7 +152,7 @@ module axi_blockram #(
         for (i = 0; i < G_AXI_PACK; i = i + 1) begin
             assign w_wdata[(G_AXI_DATAWIDTH*i)+:G_AXI_DATAWIDTH] = wdata[0+:G_AXI_DATAWIDTH];
             //assign w_wea[(4*i)+:4] = waddr[2] == i ? w_wstrb : 4'h0;
-            assign w_wea[(4*i)+:4] = waddr[G_AXI_PACK] == i ? 4'hf : 4'h0;
+            assign w_wea[(4*i)+:4]                               = waddr[G_AXI_PACK] == i ? 4'hf : 4'h0;
         end
     endgenerate
     assign w_waddr = waddr[(G_AXI_PACK+1)+:$bits(waddr)-G_AXI_PACK-1];

@@ -23,7 +23,7 @@ class vivado_runner:
         self.implname = "impl_1"
         self.bitstream = f"{self.dir}/{self.name}.runs/{self.implname}/{self.project.synth_top}.bit"
         self.vivado_rev = os.environ["XILINX_REV"]
-        self.vivado_rev_short = re.sub("\..+", "", self.vivado_rev)
+        self.vivado_rev_short = re.sub(r"\..+", "", self.vivado_rev)
         
 
         self.unique_id = None
@@ -59,6 +59,7 @@ class vivado_runner:
         files = []
         files.extend(self.project.common_files)
         files.extend(self.project.syn_files)
+        self.lines.append("set_msg_config -id {Vivado 12-3645} -new_severity {WARNING}")
         for file in self.project.pathfiles(self.project.constraints_files):
             path = f"{{{file.relpath}}}"
             self.lines.append(f"add_files -fileset constrs_1 -norecurse {path}")
@@ -78,6 +79,9 @@ class vivado_runner:
         self.lines.append(f"set_property top {self.project.synth_top} [current_fileset]")
         for cmd in self.project.custom_vivado:
             self.lines.append(cmd)
+        if not 0 == len(self.project.include_dirs):
+            dirs = " ".join(self.project.include_dirs)
+            self.lines.append(f"set_property include_dirs {{{dirs}}} [current_fileset]")
         for file in self.project.pathfiles(self.project.sim_files):
             path = f"{{{file.relpath}}}"
             self.lines.append(f"add_files -norecurse {path}")
