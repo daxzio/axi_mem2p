@@ -28,6 +28,7 @@ module blockmem_2p_wrapper #(
     , integer G_DATAWIDTH = 32
     , integer G_MEMDEPTH = 1024
     , integer G_BWENABLE = 0
+    , integer G_BUFFER = 1
     , parameter G_INIT_FILE = ""  // verilog_lint: waive explicit-parameter-storage-type (not supported in vivado)
     , integer G_ADDRWIDTH = $clog2(G_MEMDEPTH)
     //localparam integer G_PADWIDTH = ($ceil(real'(G_DATAWIDTH/ 8.0) ) * 8);
@@ -53,6 +54,7 @@ module blockmem_2p_wrapper #(
                   .G_DATAWIDTH(G_DATAWIDTH)
                 , .G_MEMDEPTH (G_MEMDEPTH)
                 , .G_BWENABLE (G_BWENABLE)
+                , .G_BUFFER   (G_BUFFER)
                 , .G_INIT_FILE(G_INIT_FILE)
             ) i_blockmem_2p (
                 .*
@@ -62,6 +64,7 @@ module blockmem_2p_wrapper #(
                   .G_DATAWIDTH(G_DATAWIDTH)
                 , .G_MEMDEPTH (G_MEMDEPTH)
                 , .G_BWENABLE (G_BWENABLE)
+                , .G_BUFFER   (G_BUFFER)
                 , .G_INIT_FILE(G_INIT_FILE)
             ) i_blockmem_2p (
                 .*

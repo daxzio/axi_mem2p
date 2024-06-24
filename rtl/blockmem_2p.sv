@@ -28,6 +28,7 @@ module blockmem_2p #(
     , integer G_DATAWIDTH = 32
     , integer G_MEMDEPTH = 1024
     , integer G_BWENABLE = 0
+    , integer G_BUFFER = 1
     , parameter G_INIT_FILE = ""  // verilog_lint: waive explicit-parameter-storage-type (not supported in vivado)
     , integer G_ADDRWIDTH = $clog2(G_MEMDEPTH)
     //localparam integer G_PADWIDTH = ($ceil(real'(G_DATAWIDTH/ 8.0) ) * 8);
@@ -50,8 +51,9 @@ module blockmem_2p #(
     localparam integer G_WWIDTH = ((G_PADWIDTH - 1) / 8) + 1;
     localparam integer G_DIFFWIDTH = G_PADWIDTH - G_DATAWIDTH;
 
-    logic [ G_PADWIDTH-1:0] f_ram       [0:G_MEMDEPTH];
+    logic [ G_PADWIDTH-1:0] f_ram       [0:G_MEMDEPTH-1];
     logic [G_DATAWIDTH-1:0] f_doutb = 0;
+    logic [G_DATAWIDTH-1:0] d_doutb;
 
     logic [   G_WWIDTH-1:0] w_wea;
     logic [ G_PADWIDTH-1:0] w_dina;
@@ -83,8 +85,24 @@ module blockmem_2p #(
         end
     end
 
+    //     always @(*) begin
+    //         d_doutb = f_doutb;
+    //         if (enb) d_doutb = f_ram[addrb][0+:G_DATAWIDTH];
+    //     end
+    //     always @(posedge clkb) begin
+    //         f_doutb <= d_doutb;
+    //     end
+    // 
+    //     generate
+    //         if (1 == G_BUFFER) begin : g_buffer_output
+    //             assign doutb = f_doutb;
+    //         end else begin : g_no_buffer_output
+    //             assign doutb = d_doutb;
+    //         end
+    //     endgenerate
+
     always @(posedge clkb) begin
-        if (enb) f_doutb <= f_ram[addrb][0+:G_DATAWIDTH];
+        if (enb) f_doutb = f_ram[addrb][0+:G_DATAWIDTH];
     end
     assign doutb = f_doutb;
 
